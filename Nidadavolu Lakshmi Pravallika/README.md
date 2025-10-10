@@ -4,13 +4,17 @@ AgriYield Predictor - Forecasting Crop Yield Using Environmental and Soil Data
 Objective
 
 1.Develop a machine learning system to predict crop yield based on environmental and soil parameters like rainfall, temperature, humidity, soil type, and nutrient content.
+
 2.Help farmers and planners optimize crop production.
 
 Outcomes
 
 1.Data preprocessing and feature engineering on agricultural datasets.
+
 2.Training and evaluating regression models (Random Forest, XGBoost, Linear Regression).
+
 3.Model performance comparison and explainability (using SHAP values).
+
 4.Deliver a functional prototype with yield predictions based on user input or uploaded data.
 
 Dataset Sources
