@@ -20,22 +20,33 @@ Outcomes
 Dataset Sources
 
 1.FAO Crop Production Dataset (crop yield data by region).
+
 2.Kaggle Agriculture datasets (environmental and soil data by region).
+
 3.Indian Government Open Agriculture Data Portal.
+
 4.Weather and soil data from public sources like Kaggle, NOAA, Open Weather Map APIs.
 
 Project Modules (Milestones)
 
 1.Data Collection and Preprocessing
+
 2.Exploratory Data Analysis (EDA) and Feature Engineering
+
 3.Model Development and Evaluation
+
 4.UI Development for input and prediction output, Integration and Deployment
 
 Tools and Technologies
 
 1.Programming: Python
+
 2.Libraries: pandas, numpy, matplotlib, seaborn, scikit-learn, xgboost, lightgbm, SHAP
+
 3.Frameworks: Flask or Django for UI
+
 4.Development: Jupyter Notebook, VS Code
+
 5.Version Control: Git, GitHub
+
 6.Deployment: Heroku, AWS, Google Cloud
