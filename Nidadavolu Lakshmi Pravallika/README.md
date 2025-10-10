@@ -22,10 +22,6 @@ AgriYield Predictor - Forecasting Crop Yield Using Environmental and Soil Data
 
 2.Kaggle Agriculture datasets (environmental and soil data by region).
 
-3.Indian Government Open Agriculture Data Portal.
-
-4.Weather and soil data from public sources like Kaggle, NOAA, Open Weather Map APIs.
-
 **Project Modules (Milestones)**
 
 1.Data Collection and Preprocessing
