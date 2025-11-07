@@ -1,7 +1,8 @@
-from flask import Flask, request, jsonify, render_template_string, url_for, session, redirect
+from flask import Flask, request, jsonify, render_template_string, url_for, session, send_file
 import numpy as np
 import joblib
 import json
+import os
 
 app = Flask(__name__)
 app.secret_key = "my_secret_key"
@@ -17,12 +18,13 @@ with open("crop_mapping.json") as f:
 
 crop_count = len(crop_mapping)
 
-# ---------- MAIN PAGE HTML ----------
+
+# ---------- MAIN PAGE ----------
 HTML_MAIN = '''
 <!DOCTYPE html>
 <html>
 <head>
-<title>AgriYield Predictor</title>
+<title>AgriYield Predictor 🌾</title>
 
 <style>
     body {
@@ -35,14 +37,14 @@ HTML_MAIN = '''
         font-size: 42px;
         font-weight:bold;
         color: white;
-        margin-top: 20px;
+        margin-top: 25px;
         margin-bottom: 25px;
         text-shadow: 3px 3px 8px black;
     }
     .center-box {
         margin: auto;
-        width: 430px;
-        background: rgba(255, 255, 255, 0.94);
+        width: 440px;
+        background: rgba(255, 255, 255, 0.95);
         border-radius: 18px;
         padding: 35px;
         box-shadow: 0 6px 25px rgba(0,0,0,0.35);
@@ -86,26 +88,62 @@ HTML_MAIN = '''
         text-align:center;
         border-radius:6px;
     }
-    .history-btn {
-        background: #004d14;
-        color: white;
-        border: none;
-        border-radius: 8px;
-        padding: 10px 20px;
-        font-size: 16px;
-        margin-top: 15px;
-        cursor: pointer;
+
+    /* Floating Icon Buttons */
+    .icon-bar {
+        position: fixed;
+        top: 20px;
+        right: 25px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+        z-index: 1000;
     }
-    .history-btn:hover {
-        background: #028a22;
+    .icon-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .icon {
+        width: 36px;
+        height: 36px;
+        cursor: pointer;
+        background: #007f1c;
+        border-radius: 50%;
+        padding: 6px;
+        box-shadow: 0 0 6px rgba(0,0,0,0.5);
+        transition: transform 0.2s, background 0.2s;
+    }
+    .icon:hover {
+        transform: scale(1.12);
+        background: #005a14;
+    }
+    .icon-label {
+        color: white;
+        font-weight: bold;
+        text-shadow: 2px 2px 5px black;
+        font-size: 13px;
+        margin-top: 3px;
     }
 </style>
 
 </head>
-
 <body>
 
 <div class="banner">AgriYield Predictor</div>
+
+<!-- Floating Icons -->
+<div class="icon-bar">
+    <div class="icon-wrapper">
+        <img src="https://cdn-icons-png.flaticon.com/512/1828/1828817.png" class="icon" title="View History" onclick="window.location.href='/history'">
+        <div class="icon-label">History</div>
+    </div>
+    <div class="icon-wrapper">
+        <img src="https://cdn-icons-png.flaticon.com/512/724/724933.png" class="icon" title="Download Report" onclick="window.location.href='/download'">
+        <div class="icon-label">Download</div>
+    </div>
+</div>
 
 <div class="center-box">
 
@@ -140,8 +178,6 @@ HTML_MAIN = '''
   <button onclick="predictYield()">Predict Yield</button>
 
   <div id="result" class="result-box"></div>
-
-  <button class="history-btn" onclick="window.location.href='/history'">📜 View History</button>
 </div>
 
 <script>
@@ -174,7 +210,8 @@ function predictYield() {
 </html>
 '''
 
-# ---------- HISTORY PAGE HTML ----------
+
+# ---------- HISTORY PAGE ----------
 HTML_HISTORY = '''
 <!DOCTYPE html>
 <html>
@@ -189,7 +226,7 @@ HTML_HISTORY = '''
         text-align: center;
     }
     .container {
-        width: 550px;
+        width: 700px;
         margin: auto;
         margin-top: 60px;
         background: rgba(255,255,255,0.9);
@@ -209,6 +246,7 @@ HTML_HISTORY = '''
         margin-bottom: 10px;
         text-align: left;
         font-size: 17px;
+        line-height: 1.6;
     }
     .back-btn {
         background: #007f1c;
@@ -230,7 +268,7 @@ HTML_HISTORY = '''
   <h2>📜 Prediction History</h2>
   {% if history %}
     {% for record in history %}
-      <div class="history-item">{{ record }}</div>
+      <div class="history-item">{{ record|safe }}</div>
     {% endfor %}
   {% else %}
       <p>No history available yet.</p>
@@ -241,40 +279,59 @@ HTML_HISTORY = '''
 </html>
 '''
 
+
 # ---------- ROUTES ----------
 @app.route("/")
 def home():
     return render_template_string(HTML_MAIN, crop_mapping=crop_mapping)
 
+
 @app.route("/predict", methods=["POST"])
 def predict():
     data = request.json
+    crop_name = crop_mapping[str(data["CropType"])]
 
     X_num = np.array([[data["N"], data["P"], data["K"],
                        data["temperature"], data["humidity"],
                        data["ph"], data["rainfall"]]])
-
     num_scaled = input_scaler.transform(X_num)
     crop_onehot = np.zeros((1, crop_count))
     crop_onehot[0][data["CropType"]] = 1
-
     final_features = np.hstack([num_scaled, crop_onehot])
+
     scaled_pred = model.predict(final_features)[0]
     real_pred = y_scaler.inverse_transform([[scaled_pred]])[0][0]
 
-    # Save to history (max 10)
+    # Save in session
     history = session.get("history", [])
-    crop_name = crop_mapping[str(data["CropType"])]
-    record = f"🌾 Crop: {crop_name} → {round(float(real_pred), 2)} kg/ha"
+    record = f"<b>🌾 Crop:</b> {crop_name} | <b>N:</b> {data['N']} | <b>P:</b> {data['P']} | <b>K:</b> {data['K']} | <b>Temp:</b> {data['temperature']}°C | <b>Humidity:</b> {data['humidity']}% | <b>pH:</b> {data['ph']} | <b>Rainfall:</b> {data['rainfall']} mm → <b>Yield:</b> {round(float(real_pred), 2)} kg/ha"
     history.insert(0, record)
     session["history"] = history[:10]
 
+    # Save in text file
+    with open("prediction_history.txt", "a") as f:
+        f.write(f"Crop: {crop_name}\n")
+        f.write(f"N: {data['N']}, P: {data['P']}, K: {data['K']}, Temp: {data['temperature']}°C, Humidity: {data['humidity']}%, pH: {data['ph']}, Rainfall: {data['rainfall']} mm\n")
+        f.write(f"Predicted Yield: {round(float(real_pred), 2)} kg/ha\n")
+        f.write("-" * 60 + "\n")
+
     return jsonify({"prediction": round(float(real_pred), 2)})
+
 
 @app.route("/history")
 def history_page():
     history = session.get("history", [])
     return render_template_string(HTML_HISTORY, history=history)
+
+
+@app.route("/download")
+def download_history():
+    file_path = "prediction_history.txt"
+    if not os.path.exists(file_path):
+        with open(file_path, "w") as f:
+            f.write("No predictions yet.")
+    return send_file(file_path, as_attachment=True)
+
 
 if __name__ == "__main__":
     app.run(debug=True)
