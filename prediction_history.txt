@@ -1,0 +1,4 @@
+Crop: rice
+N: 345, P: 4353, K: 456, Temp: 56°C, Humidity: 34%, pH: 6, Rainfall: 453 mm
+Predicted Yield: 13228.82 kg/ha
+------------------------------------------------------------
