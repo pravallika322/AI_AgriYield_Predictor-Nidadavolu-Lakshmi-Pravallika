@@ -2,3 +2,7 @@ Crop: rice
 N: 345, P: 4353, K: 456, Temp: 56°C, Humidity: 34%, pH: 6, Rainfall: 453 mm
 Predicted Yield: 13228.82 kg/ha
 ------------------------------------------------------------
+Crop: chickpea
+N: 43, P: 66, K: 79, Temp: 19.4623°C, Humidity: 15.2254%, pH: 7.97661, Rainfall: 74.5857 mm
+Predicted Yield: 1171.17 kg/ha
+------------------------------------------------------------
