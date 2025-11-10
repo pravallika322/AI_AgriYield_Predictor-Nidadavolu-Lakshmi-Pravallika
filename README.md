@@ -26,36 +26,21 @@ The goal of this project is to:
 
 ## Project Structure
 
-AI_AgriYield_Predictor/
-
-│
-
-├── app.py
-
-├── preprocessing.py
-
-├── Model_training.py
-
-│
-
-├── Merged_Crop_Yield_Dataset.csv
-
-├── yield_model.pkl
-
-├── scaler_input.pkl
-
-├── scaler_y.pkl
-
-│
-
-├── requirements.txt
-
-├── Procfile
-
-├── runtime.txt
-
-└── README.md
-
+AI_AgriYield_Predictor/  
+│  
+├── app.py  
+├── preprocessing.py  
+├── Model_training.py  
+│  
+├── Merged_Crop_Yield_Dataset.csv  
+├── yield_model.pkl  
+├── scaler_input.pkl  
+├── scaler_y.pkl  
+│  
+├── requirements.txt  
+├── Procfile  
+├── runtime.txt  
+└── README.md  
 
 ---
 
@@ -68,24 +53,20 @@ pip install -r requirements.txt
 
 ### 2. Run the Flask App
 
-python app.py
-
 
 ### 3. Open in Browser
-
 http://127.0.0.1:5000/
-
 
 ---
 
 ## Tech Stack
 
-- Python
-- pandas, numpy
-- scikit-learn
-- Flask
-- matplotlib / seaborn
-- Deployment: Heroku / Render / AWS
+- Python  
+- pandas, numpy  
+- scikit-learn  
+- Flask  
+- matplotlib / seaborn  
+- Deployment: Heroku / Render / AWS  
 
 ---
 
@@ -122,7 +103,3 @@ heroku open
 ## License
 
 MIT License
-
-
-
-
