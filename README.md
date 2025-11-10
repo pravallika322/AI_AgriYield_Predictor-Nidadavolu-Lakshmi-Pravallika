@@ -99,7 +99,3 @@ heroku open
 
 
 ---
-
-## License
-
-MIT License
