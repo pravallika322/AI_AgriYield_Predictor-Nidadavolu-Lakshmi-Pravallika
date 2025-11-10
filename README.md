@@ -93,9 +93,13 @@ Includes:
 ### Heroku Deployment Steps
 
 heroku login
+
 heroku create
+
 git push heroku main
+
 heroku open
+
 
 
 ---
