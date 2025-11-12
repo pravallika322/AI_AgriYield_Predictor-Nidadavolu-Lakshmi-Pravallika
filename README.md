@@ -1,6 +1,6 @@
 # AgriYield Predictor
 
-A Machine Learning project that predicts crop yield based on environmental, soil, and weather features. 
+A Machine Learning project that predicts crop yield based on environmental, soil, and weather features.  
 This system helps farmers and planners estimate crop yield using user inputs through a Flask-based web application.
 
 ---
@@ -20,7 +20,7 @@ The goal of this project is to:
 - Regression model training
 - Saved model files for fast prediction (.pkl)
 - Flask web app for user interaction
-- Deployment-ready setup (Heroku/Render/AWS)
+- Deployment-ready setup for Railway or other cloud platforms
 
 ---
 
@@ -62,69 +62,67 @@ python app.py
 
 ## 🧠 Tech Stack
 
-- **Python**  
-- **pandas**, **numpy**  
-- **scikit-learn**, **xgboost**  
-- **Flask**  
-- **matplotlib**, **seaborn**  
-- **Deployment:** Railway (Cloud Hosting)
+- Python  
+- pandas , numpy  
+- scikit-learn , xgboost  
+- Flask 
+- matplotlib , seaborn  
+- Deployment: Railway (Cloud Hosting)
 
 ---
 
 ## 🌾 Dataset Sources
 
-- [FAO Crop Production Data](https://www.fao.org/faostat/en/#data/QCL)  
-- [Kaggle Agricultural Datasets](https://www.kaggle.com)  
-- [Indian Government Agriculture Data](https://data.gov.in/sector/agriculture)
+- FAO Crop Production Data(https://www.fao.org/faostat/en/#data/QCL)  
+- Kaggle Agricultural Datasets(https://www.kaggle.com)  
+- Indian Government Agriculture Data(https://data.gov.in/sector/agriculture)
 
 ---
 
 ## 🚀 Deployment (Railway)
 
 Includes:
-- `requirements.txt`  
-- `Procfile`  
-- `runtime.txt`  
-- `app.py`  
-- Model `.pkl` files  
+- requirements.txt  
+- Procfile 
+- runtime.txt  
+- app.py  
+- Model.pkl files  
 
 ### 🚀 Railway Deployment Steps
 
-1️⃣ Go to [https://railway.app](https://railway.app) and **log in**.  
-2️⃣ Click **“New Project → Deploy from GitHub Repository.”**  
+1️⃣ Go to [https://railway.app](https://railway.app) and log in.  
+2️⃣ Click “New Project → Deploy from GitHub Repository.”  
 3️⃣ Choose your repo:  
-   **AI_AgriYield_Predictor-Nidadavolu-Lakshmi-Pravallika**  
-4️⃣ Railway will automatically detect your `Procfile` and build the app.  
-5️⃣ Wait until the logs show ✅ **Deployment Successful**.  
+    AI_AgriYield_Predictor-Nidadavolu-Lakshmi-Pravallika
+4️⃣ Railway will automatically detect your Procfile and build the app.  
+5️⃣ Wait until the logs show ✅ Deployment Successful.  
 6️⃣ Open your live app using the generated link below 👇  
 
-🔗 [AI AgriYield Predictor - Live App](https://web-production-f8a1.up.railway.app)
+🔗 AI AgriYield Predictor - Live App(https://web-production-f8a1.up.railway.app)
 
 ---
 
 ## ⚙️ Files Required for Deployment
 
-| File | Description |
-|------|--------------|
-| `app.py` | Main Flask application |
-| `requirements.txt` | Python dependencies |
-| `Procfile` | Start command (`web: gunicorn app:app`) |
-| `runtime.txt` | Python version (e.g., `python-3.10.14`) |
-| `.pkl` files | Trained model and scalers |
+|      File        |               Description               |
+|------------------|-----------------------------------------|
+| app.py           | Main Flask application                  |
+| requirements.txt | Python dependencies                     |
+| Procfile         | Start command (`web: gunicorn app:app`) |
+| runtime.txt      | Python version (e.g., `python-3.10.14`) |
+| .pkl files       | Trained model and scalers               |
 
 ---
 
 ## 🌐 Live Deployment
 
 ✅ The project is successfully deployed and live here:  
-🔗 **[AI AgriYield Predictor - Live App](https://web-production-f8a1.up.railway.app)**  
+🔗 AI AgriYield Predictor - Live App(https://web-production-f8a1.up.railway.app) 
 
 ---
 
 ## 🧑‍💻 Author
 
 **👩‍💻 Nidadavolu Lakshmi Pravallika**  
-🎓 Academic Project — Crop Yield Prediction using ML & Flask  
-📧 *(optional: you can add your email if needed)*  
+🎓 Academic Project — Crop Yield Prediction using ML & Flask
 
-⭐ If you found this project helpful, don’t forget to **Star this repo** on GitHub! ⭐
