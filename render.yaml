@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: ai-agri-yield-predictor
+    env: python
+    buildCommand: pip install --upgrade pip && pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    pythonVersion: 3.10.14
