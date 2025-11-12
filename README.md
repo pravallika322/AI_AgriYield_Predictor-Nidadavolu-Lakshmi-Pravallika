@@ -114,11 +114,13 @@ Includes:
 
 ---
 
-## 🌐 Live Deployment
-
-✅ The project is successfully deployed and live here:
-👉 [**Click Here to Open AI AgriYield Predictor**](https://web-production-f8a1.up.railway.app)
-
+<h2>🌐 Live App</h2>
+<p>
+  You can directly open the deployed application below 👇 <br>
+  <a href="https://web-production-f8a1.up.railway.app" target="_blank">
+    <b>🔗 Click Here to Open AI AgriYield Predictor</b>
+  </a>
+</p>
 
 
 ---
