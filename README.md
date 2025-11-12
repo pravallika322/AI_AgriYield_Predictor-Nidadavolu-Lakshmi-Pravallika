@@ -47,9 +47,8 @@ AI_AgriYield_Predictor/
 ## 💻 How to Run Locally
 
 ### 1️⃣ Install Dependencies
-```bash
-pip install -r requirements.txt
 
+pip install -r requirements.txt
 
 
 ### 2. Run the Flask App
@@ -88,7 +87,7 @@ Includes:
 - app.py  
 - Model.pkl files  
 
-### 🚀 Railway Deployment Steps
+## 🚀 Railway Deployment Steps
 
 1️⃣ Go to [https://railway.app](https://railway.app) and log in.  
 2️⃣ Click “New Project → Deploy from GitHub Repository.”  
