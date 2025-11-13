@@ -3,11 +3,13 @@ import numpy as np
 import joblib
 import json
 import os
+import csv
+from fpdf import FPDF
 
 app = Flask(__name__)
 app.secret_key = "my_secret_key"
 
-# Load model and scalers
+# Load model & scalers
 model = joblib.load("yield_model.pkl")
 input_scaler = joblib.load("scaler_input.pkl")
 y_scaler = joblib.load("scaler_y.pkl")
@@ -18,8 +20,7 @@ with open("crop_mapping.json") as f:
 
 crop_count = len(crop_mapping)
 
-
-# ---------- MAIN PAGE ----------
+# -------------------- MAIN PAGE --------------------
 HTML_MAIN = '''
 <!DOCTYPE html>
 <html>
@@ -43,8 +44,8 @@ HTML_MAIN = '''
     }
     .center-box {
         margin: auto;
-        width: 440px;
-        background: rgba(255, 255, 255, 0.95);
+        width: 460px;
+        background: rgba(255, 255, 255, 0.96);
         border-radius: 18px;
         padding: 35px;
         box-shadow: 0 6px 25px rgba(0,0,0,0.35);
@@ -63,8 +64,12 @@ HTML_MAIN = '''
         border-radius: 6px;
         border: 1px solid green;
     }
+    input::placeholder {
+        color: #666;
+        font-size: 14px;
+    }
     button {
-        width: 100%;
+        width: 48%;
         background: #007f1c;
         padding: 12px;
         color: #fff;
@@ -72,10 +77,20 @@ HTML_MAIN = '''
         border-radius: 10px;
         font-size: 18px;
         cursor: pointer;
+        margin: 5px 1%;
     }
     button:hover {
         background: #005a14;
         transform: scale(1.04);
+    }
+    .reset-btn {
+        background: #888;
+    }
+    .alert {
+        color: red;
+        font-size: 14px;
+        font-weight: bold;
+        margin-bottom: 10px;
     }
     .result-box {
         margin-top: 20px;
@@ -88,8 +103,29 @@ HTML_MAIN = '''
         text-align:center;
         border-radius:6px;
     }
-
-    /* Floating Icon Buttons */
+    .info-card {
+        margin-top: 25px;
+        padding: 15px;
+        background: #f0fff0;
+        border-radius: 10px;
+        box-shadow: 0 0 5px rgba(0,0,0,0.2);
+        font-size: 15px;
+        text-align:center;
+    }
+    .dev-line {
+        font-weight: bold;
+        color: #006400;
+        font-size: 16px;
+        margin-top: 8px;
+        text-align:center;
+    }
+    footer {
+        text-align:center;
+        margin-top:25px;
+        color:white;
+        text-shadow:1px 1px 3px black;
+    }
+    /* Floating Icons */
     .icon-bar {
         position: fixed;
         top: 20px;
@@ -98,12 +134,6 @@ HTML_MAIN = '''
         flex-direction: column;
         align-items: center;
         gap: 15px;
-        z-index: 1000;
-    }
-    .icon-wrapper {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
     }
     .icon {
         width: 36px;
@@ -112,19 +142,6 @@ HTML_MAIN = '''
         background: #007f1c;
         border-radius: 50%;
         padding: 6px;
-        box-shadow: 0 0 6px rgba(0,0,0,0.5);
-        transition: transform 0.2s, background 0.2s;
-    }
-    .icon:hover {
-        transform: scale(1.12);
-        background: #005a14;
-    }
-    .icon-label {
-        color: white;
-        font-weight: bold;
-        text-shadow: 2px 2px 5px black;
-        font-size: 13px;
-        margin-top: 3px;
     }
 </style>
 
@@ -133,40 +150,35 @@ HTML_MAIN = '''
 
 <div class="banner">AgriYield Predictor</div>
 
-<!-- Floating Icons -->
 <div class="icon-bar">
-    <div class="icon-wrapper">
-        <img src="https://cdn-icons-png.flaticon.com/512/1828/1828817.png" class="icon" title="View History" onclick="window.location.href='/history'">
-        <div class="icon-label">History</div>
-    </div>
-    <div class="icon-wrapper">
-        <img src="https://cdn-icons-png.flaticon.com/512/724/724933.png" class="icon" title="Download Report" onclick="window.location.href='/download'">
-        <div class="icon-label">Download</div>
-    </div>
+    <img src="https://cdn-icons-png.flaticon.com/512/1828/1828817.png" class="icon" onclick="window.location.href='/history'">
+    <img src="https://cdn-icons-png.flaticon.com/512/724/724933.png" class="icon" onclick="window.location.href='/download'">
 </div>
 
 <div class="center-box">
 
-  <label>Nitrogen (N)</label>
-  <input type="number" id="N" required>
+  <div id="alert" class="alert"></div>
 
-  <label>Phosphorus (P)</label>
-  <input type="number" id="P" required>
+  <label>Nitrogen (0 - 140)</label>
+  <input type="number" id="N" placeholder="0 - 140">
 
-  <label>Potassium (K)</label>
-  <input type="number" id="K" required>
+  <label>Phosphorus (5 - 100)</label>
+  <input type="number" id="P" placeholder="5 - 100">
 
-  <label>Temperature (°C)</label>
-  <input type="number" id="temperature" required>
+  <label>Potassium (20 - 250)</label>
+  <input type="number" id="K" placeholder="20 - 250">
 
-  <label>Humidity (%)</label>
-  <input type="number" id="humidity" required>
+  <label>Temperature (10°C - 45°C)</label>
+  <input type="number" id="temperature" placeholder="10 - 45">
 
-  <label>Soil pH</label>
-  <input type="number" id="ph" step="any" required>
+  <label>Humidity (20% - 90%)</label>
+  <input type="number" id="humidity" placeholder="20 - 90">
 
-  <label>Rainfall (mm)</label>
-  <input type="number" id="rainfall" required>
+  <label>Soil pH (4.5 - 9.0)</label>
+  <input type="number" step="any" id="ph" placeholder="4.5 - 9.0">
+
+  <label>Rainfall (50 - 400 mm)</label>
+  <input type="number" id="rainfall" placeholder="50 - 400">
 
   <label>Crop Type</label>
   <select id="CropType">
@@ -175,34 +187,72 @@ HTML_MAIN = '''
     {% endfor %}
   </select>
 
-  <button onclick="predictYield()">Predict Yield</button>
+  <button onclick="predictYield()">Predict</button>
+  <button class="reset-btn" onclick="resetForm()">Reset</button>
 
   <div id="result" class="result-box"></div>
+
+  <div class="info-card">
+      🌾 <b>About:</b> Predicts agricultural crop yield using ML.
+  </div>
+
 </div>
 
+<footer>© 2025 AgriYield Predictor | Powered by Flask & Machine Learning</footer>
+
 <script>
+function validateInputs() {
+  const fields = [
+    {id:'N', min:0, max:140},
+    {id:'P', min:5, max:100},
+    {id:'K', min:20, max:250},
+    {id:'temperature', min:10, max:45},
+    {id:'humidity', min:20, max:90},
+    {id:'ph', min:4.5, max:9},
+    {id:'rainfall', min:50, max:400}
+  ];
+
+  for (let f of fields) {
+    let val = parseFloat(document.getElementById(f.id).value);
+    if (isNaN(val) || val < f.min || val > f.max) {
+      document.getElementById("alert").innerText =
+        "⚠️ " + f.id.toUpperCase() + " must be between " + f.min + " and " + f.max;
+      return false;
+    }
+  }
+  document.getElementById("alert").innerText = "";
+  return true;
+}
+
 function predictYield() {
+  if (!validateInputs()) return;
+
   const data = {
-    N: parseFloat(document.getElementById('N').value),
-    P: parseFloat(document.getElementById('P').value),
-    K: parseFloat(document.getElementById('K').value),
-    temperature: parseFloat(document.getElementById('temperature').value),
-    humidity: parseFloat(document.getElementById('humidity').value),
-    ph: parseFloat(document.getElementById('ph').value),
-    rainfall: parseFloat(document.getElementById('rainfall').value),
-    CropType: parseInt(document.getElementById('CropType').value)
+    N: parseFloat(N.value),
+    P: parseFloat(P.value),
+    K: parseFloat(K.value),
+    temperature: parseFloat(temperature.value),
+    humidity: parseFloat(humidity.value),
+    ph: parseFloat(ph.value),
+    rainfall: parseFloat(rainfall.value),
+    CropType: parseInt(CropType.value)
   };
 
   fetch("/predict", {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
     body: JSON.stringify(data)
   })
-  .then(res => res.json())
-  .then(data => {
-    document.getElementById("result").innerHTML =
-      "✅ Predicted Yield: " + data.prediction + " kilograms/hectare";
+  .then(r=>r.json())
+  .then(d=>{
+    result.innerHTML = "✅ Predicted Yield: " + d.prediction + " kg/ha";
   });
+}
+
+function resetForm() {
+  document.querySelectorAll("input").forEach(i=>i.value="");
+  result.innerHTML = "";
+  alert.innerText = "";
 }
 </script>
 
@@ -210,130 +260,163 @@ function predictYield() {
 </html>
 '''
 
-
-# ---------- HISTORY PAGE ----------
+# -------------------- HISTORY PAGE --------------------
 HTML_HISTORY = '''
 <!DOCTYPE html>
 <html>
 <head>
-<title>Prediction History</title>
+<title>History</title>
 <style>
-    body {
-        font-family: Arial;
-        background: url("{{ url_for('static', filename='blog-yield.jpg') }}") no-repeat center center fixed;
-        background-size: cover;
-        color: #003300;
-        text-align: center;
+    body { background:#f0fff4; font-family:Arial; text-align:center; padding:40px; }
+    h2 { color:#007f3a; font-size:32px; margin-bottom:20px; }
+    .hcard {
+        background:white;
+        width:750px;
+        margin:auto;
+        margin-bottom:15px;
+        padding:15px;
+        text-align:left;
+        border-radius:10px;
+        border-left:6px solid #00994d;
+        box-shadow:0 0 10px rgba(0,0,0,0.2);
+        font-size:17px;
+        line-height:1.6;
     }
-    .container {
-        width: 700px;
-        margin: auto;
-        margin-top: 60px;
-        background: rgba(255,255,255,0.9);
-        border-radius: 15px;
-        padding: 30px;
-        box-shadow: 0 6px 25px rgba(0,0,0,0.35);
-    }
-    h2 {
-        color: #007f1c;
-        text-shadow: 1px 1px 3px white;
-    }
-    .history-item {
-        background: #e6ffe6;
-        border-left: 6px solid #04a124;
-        padding: 12px;
-        border-radius: 8px;
-        margin-bottom: 10px;
-        text-align: left;
-        font-size: 17px;
-        line-height: 1.6;
-    }
-    .back-btn {
-        background: #007f1c;
-        color: white;
-        border: none;
-        border-radius: 8px;
-        padding: 10px 20px;
-        font-size: 16px;
-        margin-top: 15px;
-        cursor: pointer;
-    }
-    .back-btn:hover {
-        background: #005a14;
-    }
+    .btn { padding:12px 20px; background:#00994d; color:white; border:none;
+           border-radius:10px; cursor:pointer; font-size:18px; margin-top:15px; }
+    .btn:hover { background:#007f3a; }
 </style>
 </head>
 <body>
-<div class="container">
-  <h2>📜 Prediction History</h2>
-  {% if history %}
-    {% for record in history %}
-      <div class="history-item">{{ record|safe }}</div>
-    {% endfor %}
-  {% else %}
-      <p>No history available yet.</p>
-  {% endif %}
-  <button class="back-btn" onclick="window.location.href='/'">⬅ Back to Predictor</button>
-</div>
+
+<h2>📜 Prediction History</h2>
+
+{% if history %}
+  {% for rec in history %}
+      {{ rec|safe }}
+  {% endfor %}
+{% else %}
+<p>No predictions yet.</p>
+{% endif %}
+
+<button class="btn" onclick="window.location.href='/'">⬅ Back</button>
+
 </body>
 </html>
 '''
 
+# -------------------- DOWNLOAD PAGE --------------------
+HTML_DOWNLOAD = '''
+<html>
+<head>
+<style>
+    body { background:#f0fff4; font-family:Arial; text-align:center; padding-top:50px; }
+    h2 { color:#007f3a; font-size:32px; }
+    .dbtn {
+        padding:14px 26px; margin:12px; border-radius:10px;
+        background:#00994d; color:white; border:none;
+        font-size:18px; cursor:pointer;
+        transition:0.2s;
+    }
+    .dbtn:hover { background:#007f3a; transform:scale(1.05); }
+    .back { background:#555; }
+    .back:hover { background:#333; }
+</style>
+</head>
 
-# ---------- ROUTES ----------
+<body>
+
+<h2>📄 Download Your Reports</h2>
+
+<a href="/get_csv"><button class="dbtn">⬇ Download CSV</button></a><br>
+<a href="/get_pdf"><button class="dbtn">⬇ Download PDF</button></a><br>
+
+<button onclick="window.location.href='/'" class="dbtn back">⬅ Back</button>
+
+</body>
+</html>
+'''
+
+# -------------------- ROUTES --------------------
+
 @app.route("/")
 def home():
     return render_template_string(HTML_MAIN, crop_mapping=crop_mapping)
 
-
 @app.route("/predict", methods=["POST"])
 def predict():
     data = request.json
-    crop_name = crop_mapping[str(data["CropType"])]
+    cname = crop_mapping[str(data["CropType"])]
 
-    X_num = np.array([[data["N"], data["P"], data["K"],
-                       data["temperature"], data["humidity"],
-                       data["ph"], data["rainfall"]]])
-    num_scaled = input_scaler.transform(X_num)
-    crop_onehot = np.zeros((1, crop_count))
-    crop_onehot[0][data["CropType"]] = 1
-    final_features = np.hstack([num_scaled, crop_onehot])
+    X = np.array([[data["N"], data["P"], data["K"],
+                   data["temperature"], data["humidity"],
+                   data["ph"], data["rainfall"]]])
 
-    scaled_pred = model.predict(final_features)[0]
-    real_pred = y_scaler.inverse_transform([[scaled_pred]])[0][0]
+    Xs = input_scaler.transform(X)
+    hot = np.zeros((1, crop_count))
+    hot[0][data["CropType"]] = 1
 
-    # Save in session
+    final = np.hstack([Xs, hot])
+    scaled = model.predict(final)[0]
+    pred = y_scaler.inverse_transform([[scaled]])[0][0]
+
+    # Save history
+    record = f"""
+    <div class='hcard'>
+    <b>🌾 Crop:</b> {cname}<br>
+    <b>N:</b> {data['N']} | <b>P:</b> {data['P']} | <b>K:</b> {data['K']}<br>
+    <b>Temp:</b> {data['temperature']}°C | <b>Humidity:</b> {data['humidity']}%<br>
+    <b>pH:</b> {data['ph']} | <b>Rainfall:</b> {data['rainfall']} mm<br>
+    <b>Predicted Yield:</b> {round(pred,2)} kg/ha
+    </div>
+    """
+
     history = session.get("history", [])
-    record = f"<b>🌾 Crop:</b> {crop_name} | <b>N:</b> {data['N']} | <b>P:</b> {data['P']} | <b>K:</b> {data['K']} | <b>Temp:</b> {data['temperature']}°C | <b>Humidity:</b> {data['humidity']}% | <b>pH:</b> {data['ph']} | <b>Rainfall:</b> {data['rainfall']} mm → <b>Yield:</b> {round(float(real_pred), 2)} kg/ha"
     history.insert(0, record)
-    session["history"] = history[:10]
+    session["history"] = history[:15]
 
-    # Save in text file
+    # Save CSV
+    with open("prediction_history.csv", "a", newline="") as c:
+        writer = csv.writer(c)
+        writer.writerow([cname, data["N"], data["P"], data["K"],
+                         data["temperature"], data["humidity"],
+                         data["ph"], data["rainfall"], round(pred,2)])
+
+    # Save TXT for PDF
     with open("prediction_history.txt", "a") as f:
-        f.write(f"Crop: {crop_name}\n")
-        f.write(f"N: {data['N']}, P: {data['P']}, K: {data['K']}, Temp: {data['temperature']}°C, Humidity: {data['humidity']}%, pH: {data['ph']}, Rainfall: {data['rainfall']} mm\n")
-        f.write(f"Predicted Yield: {round(float(real_pred), 2)} kg/ha\n")
-        f.write("-" * 60 + "\n")
+        f.write(f"{cname}, N:{data['N']}, P:{data['P']}, K:{data['K']}, ")
+        f.write(f"Temp:{data['temperature']}°C Hum:{data['humidity']}%, pH:{data['ph']}, Rain:{data['rainfall']}\n")
+        f.write(f"Yield:{round(pred,2)} kg/ha\n")
+        f.write("-"*50 + "\n")
 
-    return jsonify({"prediction": round(float(real_pred), 2)})
-
+    return jsonify({"prediction": round(pred,2)})
 
 @app.route("/history")
-def history_page():
-    history = session.get("history", [])
-    return render_template_string(HTML_HISTORY, history=history)
-
+def history():
+    return render_template_string(HTML_HISTORY, history=session.get("history", []))
 
 @app.route("/download")
-def download_history():
-    file_path = "prediction_history.txt"
-    if not os.path.exists(file_path):
-        with open(file_path, "w") as f:
-            f.write("No predictions yet.")
-    return send_file(file_path, as_attachment=True)
+def download():
+    return render_template_string(HTML_DOWNLOAD)
 
+@app.route("/get_csv")
+def get_csv():
+    return send_file("prediction_history.csv", as_attachment=True)
+
+@app.route("/get_pdf")
+def get_pdf():
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Arial", size=12)
+
+    if os.path.exists("prediction_history.txt"):
+        with open("prediction_history.txt","r") as f:
+            for line in f:
+                pdf.multi_cell(0, 8, txt=line.strip())
+
+    pdf.output("prediction_report.pdf")
+    return send_file("prediction_report.pdf", as_attachment=True)
 
 if __name__ == "__main__":
-    import os
     port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port, debug=False)
+    app.run(host="0.0.0.0", port=port)

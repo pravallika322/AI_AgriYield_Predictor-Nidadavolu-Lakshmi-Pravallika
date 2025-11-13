@@ -6,3 +6,17 @@ Crop: chickpea
 N: 43, P: 66, K: 79, Temp: 19.4623°C, Humidity: 15.2254%, pH: 7.97661, Rainfall: 74.5857 mm
 Predicted Yield: 1171.17 kg/ha
 ------------------------------------------------------------
+Crop: apple
+N: 86, P: 82, K: 23, Temp: 47°C, Humidity: 89%, pH: 9, Rainfall: 567 mm
+Predicted Yield: 2311.24 kg/ha
+------------------------------------------------------------
+Crop: orange
+N: 139, P: 99, K: 249, Temp: 42°C, Humidity: 80%, pH: 8, Rainfall: 350 mm
+Predicted Yield: 21247.02 kg/ha
+------------------------------------------------------------
+Crop: rice
+Yield: 4319.55 kg/ha
+---
+pigeonpeas, N:9, P:76, K:25, Temp:28.88302°C Hum:50.12324%, pH:5.709512, Rain:179.2156
+Yield:825.7 kg/ha
+--------------------------------------------------
