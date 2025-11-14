@@ -46,8 +46,10 @@ AI_AgriYield_Predictor/
 
 ## 💻 How to Run Locally
 
-### 1️⃣ Install Dependencies
+ 
 ```bash
+### 1️⃣ Install Dependencies
+
 pip install -r requirements.txt
 
 
