@@ -26,46 +26,26 @@ The goal of this project is to:
 
 ## Project Structure
 
-AI_AgriYield_Predictor/  
-│  
-
-├── app.py  
-
-├── preprocessing.py 
-
-├── EDA.py 
-
-├── Model_training.py  
-
-│  
-
-├── Merged_Crop_Yield_Dataset.csv  
-
-├── yield_model.pkl  
-
+AI_AgriYield_Predictor/
+├── app.py
+├── preprocessing.py
+├── EDA.py
+├── Model_training.py
+│
+├── Merged_Crop_Yield_Dataset.csv
+├── yield_model.pkl
 ├── scaler_input.pkl
-
-├── scaler_y.pkl 
-
+├── scaler_y.pkl
 │
-
-├── crop_mapping.json   
-
+├── crop_mapping.json
 │
-
 ├── static/
-
-│   └── blog-yield.jpg
-
+│ └── blog-yield.jpg
 │
-
-├── requirements.txt  
-
-├── Procfile  
-
-├── runtime.txt  
-
-└── README.md  
+├── requirements.txt
+├── Procfile
+├── runtime.txt
+└── README.md
 
 ---
 
