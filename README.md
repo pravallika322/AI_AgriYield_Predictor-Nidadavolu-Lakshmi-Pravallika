@@ -28,24 +28,43 @@ The goal of this project is to:
 
 AI_AgriYield_Predictor/  
 │  
+
 ├── app.py  
+
 ├── preprocessing.py 
+
 ├── EDA.py 
+
 ├── Model_training.py  
+
 │  
+
 ├── Merged_Crop_Yield_Dataset.csv  
+
 ├── yield_model.pkl  
-├── scaler_input.pkl  
+
+├── scaler_input.pkl
+
 ├── scaler_y.pkl 
+
 │
-├── crop_mapping.json                                                                                                                                              
+
+├── crop_mapping.json   
+
 │
+
 ├── static/
+
 │   └── blog-yield.jpg
+
 │
+
 ├── requirements.txt  
+
 ├── Procfile  
+
 ├── runtime.txt  
+
 └── README.md  
 
 ---
