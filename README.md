@@ -28,8 +28,7 @@ The goal of this project is to:
 
 AI_AgriYield_Predictor/
 
-├── app.py
-
+├── app.py                                                                                                                                                  
 ├── preprocessing.py
 
 ├── EDA.py
